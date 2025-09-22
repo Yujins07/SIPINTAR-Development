@@ -1,2 +1,2 @@
 # SIPINTAR-Development
-Repository aplikasi SIPINTAR dengan pengembangan yang lebih lanjut
+Repository Front-end aplikasi SIPINTAR dengan pengembangan yang lebih lanjut
