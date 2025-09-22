@@ -1,0 +1,141 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String?
+  password    String
+  role        Role     @default(STUDENT)
+  studentId   String?  @unique
+  teacherId   String?  @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  student     Student? @relation(fields: [studentId], references: [id])
+  teacher     Teacher? @relation(fields: [teacherId], references: [id])
+  attendances Attendance[]
+  
+  @@map("users")
+}
+
+model Student {
+  id          String   @id @default(cuid())
+  studentNum  String   @unique
+  name        String
+  email       String   @unique
+  phone       String?
+  address     String?
+  classId     String?
+  faceData    String?  @db.LongText // Store face encoding data
+  photo       String?  // Photo URL
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  user        User?
+  class       Class?   @relation(fields: [classId], references: [id])
+  attendances Attendance[]
+  
+  @@map("students")
+}
+
+model Teacher {
+  id        String   @id @default(cuid())
+  teacherNum String  @unique
+  name      String
+  email     String   @unique
+  phone     String?
+  subject   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  user      User?
+  classes   Class[]
+  
+  @@map("teachers")
+}
+
+model Class {
+  id          String   @id @default(cuid())
+  name        String
+  grade       String
+  teacherId   String
+  schedule    String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  teacher     Teacher  @relation(fields: [teacherId], references: [id])
+  students    Student[]
+  attendances Attendance[]
+  
+  @@map("classes")
+}
+
+model Attendance {
+  id          String          @id @default(cuid())
+  studentId   String
+  classId     String
+  userId      String
+  date        DateTime
+  status      AttendanceStatus @default(ABSENT)
+  method      DetectionMethod  @default(MANUAL)
+  confidence  Float?          // Confidence score for CV detection
+  notes       String?         @db.Text
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  
+  // Relations
+  student     Student @relation(fields: [studentId], references: [id])
+  class       Class   @relation(fields: [classId], references: [id])
+  user        User    @relation(fields: [userId], references: [id])
+  
+  @@unique([studentId, classId, date])
+  @@map("attendances")
+}
+
+model AttendanceSession {
+  id          String   @id @default(cuid())
+  classId     String
+  date        DateTime
+  startTime   DateTime
+  endTime     DateTime?
+  isActive    Boolean  @default(true)
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("attendance_sessions")
+}
+
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+enum DetectionMethod {
+  MANUAL
+  FACE_RECOGNITION
+  QR_CODE
+  RFID
+}
