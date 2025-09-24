@@ -5,13 +5,13 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 text-gray-800 p-6">
+    <div className="fixed inset-0 z-[999] flex flex-col items-center justify-center bg-[var(--background)] text-[var(--foreground)] p-6 overflow-hidden">
       {/* Animasi angka 404 */}
       <motion.h1
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 120, damping: 15 }}
-        className="text-9xl font-extrabold text-gray-900 drop-shadow-lg"
+        className="text-9xl font-extrabold text-[var(--foreground)]"
       >
         404
       </motion.h1>
@@ -35,25 +35,11 @@ export default function NotFound() {
       >
         <Link
           href="/"
-          className="px-6 py-3 bg-blue-600 text-white rounded-2xl shadow-md hover:bg-blue-700 transition-all"
+          className="px-6 py-3 bg-[var(--primary)] text-[var(--background)] rounded-2xl shadow-md hover:bg-[var(--background)] hover:text-[var(--primary)] transition-all border-2 border-transparent hover:border-[var(--primary)] font-semibold"
         >
           Kembali ke Beranda
         </Link>
       </motion.div>
-
-      {/* Animasi dekorasi */}
-      <motion.div
-        className="absolute bottom-10 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl"
-        animate={{
-          x: [0, 30, -30, 0],
-          y: [0, -20, 20, 0],
-        }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          repeatType: "mirror",
-        }}
-      />
     </div>
   );
 }
